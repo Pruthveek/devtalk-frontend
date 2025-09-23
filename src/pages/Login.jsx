@@ -6,8 +6,8 @@ import { addUser } from "../utils/userSlice";
 import { toast } from "react-toastify";
 import { BASE_URL } from "../utils/constants";
 const Login = () => {
-  const [email, setEmail] = useState("pruthveek512@gmail.com");
-  const [password, setPassword] = useState("Pruthveek@123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigation = useNavigate();
   const handleLogin = async () => {

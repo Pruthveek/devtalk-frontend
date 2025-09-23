@@ -19,14 +19,14 @@ const Navbar = () => {
     try {
       await axios.post(BASE_URL + "/logout", {}, { withCredentials: true }); 
        dispatch(removeUser())
-      return navigation("/login");
+      return navigation("/login"); 
     } catch (err) {
       console.error(err);
     }
   };
  
   return (
-    <div className="navbar fixed bg-base-100 shadow-2xl shadow-black max-w-7xl mx-auto px-4 mt-2 rounded-full">
+    <div className="navbar fixed bg-base-100 shadow-2xl shadow-black max-w-7xl mx-auto px-4 mt-2 rounded-full z-40">
       <div className="flex-1">
         <Link to={"/"} className="text-xl font-bold cursor-pointer">
           DEVTALK
