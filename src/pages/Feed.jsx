@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addFeed } from "../utils/feedSlice";
 import { BASE_URL } from "../utils/constants";
@@ -15,7 +15,6 @@ const Feed = () => {
         withCredentials: true,
       });
       dispatch(addFeed(res?.data));
-      console.log(res?.data[0]);
     } catch (err) {
       console.log(err);
     }
@@ -24,15 +23,15 @@ const Feed = () => {
   useEffect(() => {
     getFeed();
   }, []);
-  // return (
-  //   feed &&(
-  //     <div className="h-screen w-screen flex flex-col justify-center items-center gap-4 p-4">
-  //     {feed.map((user, idx) => (
-  //       <UserCard key={idx} user={user} />
-  //     ))}
-  //   </div>
-  //   )
-  // );
+  if (!feed || feed.length <= 0) {
+    return (
+      <div className=" w-full flex justify-center pt-24">
+        <h1 className="text-3xl text-center">
+           No new person was found.<br/> Please check again after some time. ✌
+        </h1>
+      </div>
+    );
+  }
   return (
     feed && (
       <div className="h-screen w-full flex justify-center items-center">

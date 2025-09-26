@@ -39,8 +39,8 @@ export const EditProfile = ({ user }) => {
       dispatch(addUser(res.data.data));
       toast.success("Profile edited successfully.");
     } catch (err) {
-      console.error(err);
-      toast.error("Something went wrong.");
+      const msg = err.response?.data?.error || "Something went wrong.";
+      toast.error(msg);
     }
   };
 
@@ -180,6 +180,7 @@ export const EditProfile = ({ user }) => {
       <div>
         <UserCard
           user={{ firstName, lastName, photoUrl, about, age, gender, skills }}
+          viewOnly={true}
         />
       </div>
     </div>

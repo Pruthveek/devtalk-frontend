@@ -1,34 +1,67 @@
-const UserCard = ({ user }) => {
-  const { firstName, lastName, photoUrl, about, age, gender, skills } = user;
-  return (
-    <>
-      <div className="card bg-base-100 mx-2 sm:w-96 shadow-2xl shadow-black">
-        <figure>
-          <img src={photoUrl} alt={firstName + lastName} />
-        </figure>
-        <div className="card-body">
-          <h2 className="card-title">{firstName + " " + lastName}</h2>
-          {age && <p>{"Age: " + age}</p>}
-          {gender && <p>{" Gender: " + gender}</p>}
-          <p>{about}</p>
+import axios from "axios";
+import { BASE_URL } from "../../utils/constants";
+import { useDispatch } from "react-redux";
+import { removeUserFromFeed } from "../../utils/feedSlice";
 
-          <fieldset className="fieldset">
-            <legend className="fieldset-legend">Skills: </legend>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {skills.map((skill, idx) => (
-                <span key={idx} className="badge flex items-center gap-1">
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </fieldset>
-          <div className="card-actions justify-center mt-4">
-            <button className="btn btn-success">Interested</button>
-            <button className="btn btn-error">Ignore</button>
+const UserCard = ({ user, viewOnly = false }) => {
+  const { _id, firstName, lastName, photoUrl, about, age, gender, skills } =
+    user;
+  const dispatch = useDispatch();
+
+  const handelSendRequest = async (status, userId) => {
+    if (viewOnly) return; // prevent API calls when in viewOnly mode
+    try {
+      const res = await axios.post(
+        BASE_URL + "/request/send/" + status + "/" + userId,
+        {},
+        { withCredentials: true }
+      );
+      dispatch(removeUserFromFeed(userId));
+    } catch (err) {
+      console.error("Error : " + err);
+    }
+  };
+
+  return (
+    <div className="card bg-base-100 mx-2 sm:w-96 shadow-2xl shadow-black">
+      <figure>
+        <img src={photoUrl} alt={firstName + lastName} className="w-96 h-80 bg-cover" />
+      </figure>
+      <div className="card-body">
+        <h2 className="card-title">{firstName + " " + lastName}</h2>
+        {age && <p>{"Age: " + age}</p>}
+        {gender && <p>{" Gender: " + gender}</p>}
+        <p>{about}</p>
+
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Skills: </legend>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {skills.map((skill, idx) => (
+              <span key={idx} className="badge flex items-center gap-1">
+                {skill}
+              </span>
+            ))}
           </div>
+        </fieldset>
+
+        <div className="card-actions justify-center mt-4">
+          <button
+            className={`btn btn-error ${viewOnly ? "cursor-not-allowed " : ""}`}
+            disabled={viewOnly}
+            onClick={() => handelSendRequest("ignored", _id)}
+          >
+            Ignore
+          </button>
+          <button
+            className={`btn btn-success ${viewOnly ? "cursor-not-allowed " : ""}`}
+            disabled={viewOnly}
+            onClick={() => handelSendRequest("interested", _id)}
+          >
+            Interested
+          </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

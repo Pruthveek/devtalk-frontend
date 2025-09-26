@@ -10,7 +10,6 @@ const Navbar = () => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const navigation=useNavigate();
   const dispatch=useDispatch()
-  const connection=((store)=>store.connection)
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
@@ -78,7 +77,7 @@ const Navbar = () => {
                 <Link to="/profile">Profile</Link>
               </li>
               <li>
-                <Link to="/connections">Connections <span className="badge">0</span></Link>
+                <Link to="/connections">Connections</Link>
               </li>
               <li>
                 <Link to="/requests">Requests</Link>
