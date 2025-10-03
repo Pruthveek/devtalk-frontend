@@ -2,6 +2,7 @@ import axios from "axios";
 import { BASE_URL } from "../../utils/constants";
 import { useDispatch } from "react-redux";
 import { removeUserFromFeed } from "../../utils/feedSlice";
+import { toast } from "react-toastify";
 
 const UserCard = ({ user, viewOnly = false }) => {
   const { _id, firstName, lastName, photoUrl, about, age, gender, skills } =
@@ -17,6 +18,12 @@ const UserCard = ({ user, viewOnly = false }) => {
         { withCredentials: true }
       );
       dispatch(removeUserFromFeed(userId));
+      if (status === "interested") {
+        toast.success(res.data.message+` to ${firstName}.`);
+      }
+      if (status === "ignored") {
+        toast.error(`${firstName} removed from feed.`);
+      }
     } catch (err) {
       console.error("Error : " + err);
     }
@@ -25,7 +32,11 @@ const UserCard = ({ user, viewOnly = false }) => {
   return (
     <div className="card bg-base-100 mx-2 sm:w-96 shadow-2xl shadow-black">
       <figure>
-        <img src={photoUrl} alt={firstName + lastName} className="w-96 h-80 bg-cover" />
+        <img
+          src={photoUrl}
+          alt={firstName + lastName}
+          className="w-96 h-80 bg-cover"
+        />
       </figure>
       <div className="card-body">
         <h2 className="card-title">{firstName + " " + lastName}</h2>
@@ -47,13 +58,15 @@ const UserCard = ({ user, viewOnly = false }) => {
         <div className="card-actions justify-center mt-4">
           <button
             className={`btn btn-error ${viewOnly ? "cursor-not-allowed " : ""}`}
-            disabled={viewOnly}
+            disabled={viewOnly} 
             onClick={() => handelSendRequest("ignored", _id)}
           >
             Ignore
           </button>
           <button
-            className={`btn btn-success ${viewOnly ? "cursor-not-allowed " : ""}`}
+            className={`btn btn-success ${
+              viewOnly ? "cursor-not-allowed " : ""
+            }`}
             disabled={viewOnly}
             onClick={() => handelSendRequest("interested", _id)}
           >

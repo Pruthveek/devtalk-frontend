@@ -77,7 +77,7 @@ const Navbar = () => {
                 <Link to="/profile">Profile</Link>
               </li>
               <li>
-                <Link to="/connections">Connections</Link>
+                <Link to="/connections">Connections </Link>
               </li>
               <li>
                 <Link to="/requests">Requests</Link>
