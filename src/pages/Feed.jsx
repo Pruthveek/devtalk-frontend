@@ -25,7 +25,7 @@ const Feed = () => {
   }, []);
   if (!feed || feed.length <= 0) {
     return (
-      <div className=" w-full flex justify-center pt-24">
+      <div className=" w-full flex justify-center pt-40">
         <h1 className="text-3xl text-center">
            No new person was found.<br/> Please check again after some time. ✌
         </h1>

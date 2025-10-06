@@ -27,7 +27,7 @@ const Connections = () => {
 
   if (connections.length === 0) {
     return (
-      <div className=" w-full flex justify-center pt-24">
+      <div className=" w-full flex justify-center pt-40">
         <h1 className="text-3xl">No connection found 😭</h1>
       </div>
     );
