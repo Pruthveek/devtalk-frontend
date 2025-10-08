@@ -43,7 +43,6 @@ const PricingCards = () => {
         name: 'DEVTALK',
         description: 'Connect with developers',
         order_id: orderId,
-        callback_url: 'http://localhost:5173/', 
         prefill: {
           name: `${notes.firstName} ${notes.lastName}`,
           email: notes.email,
