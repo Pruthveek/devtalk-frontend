@@ -6,15 +6,14 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 
 const UserCard = ({ user, viewOnly = false }) => {
-  const { _id, firstName, lastName, photoUrl, about, age, gender, skills } =
-    user;
+  const { _id, firstName, lastName, photoUrl, about, age, gender, skills } = user;
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
+  const [loadingId, setLoadingId] = useState(null);
 
   const handelSendRequest = async (status, userId) => {
     if (viewOnly) return;
     try {
-      setLoading(true);
+      setLoadingId(userId);
       const res = await axios.post(
         BASE_URL + "/request/send/" + status + "/" + userId,
         {},
@@ -30,25 +29,20 @@ const UserCard = ({ user, viewOnly = false }) => {
     } catch (err) {
       console.error("Error : " + err);
     } finally {
-      setLoading(false);
+      setLoadingId(null);
     }
   };
 
   return (
     <div className="card bg-base-100 mx-2 sm:w-96 shadow-2xl shadow-black">
       <figure>
-        <img
-          src={photoUrl}
-          alt={firstName + lastName}
-          className="w-96 h-80 bg-cover"
-        />
+        <img src={photoUrl} alt={firstName + lastName} className="w-96 h-80 bg-cover" />
       </figure>
       <div className="card-body">
         <h2 className="card-title">{firstName + " " + lastName}</h2>
         {age && <p>{"Age: " + age}</p>}
         {gender && <p>{" Gender: " + gender}</p>}
         <p>{about}</p>
-
         <fieldset className="fieldset">
           <legend className="fieldset-legend">Skills: </legend>
           <div className="flex flex-wrap gap-2 mb-2">
@@ -59,23 +53,18 @@ const UserCard = ({ user, viewOnly = false }) => {
             ))}
           </div>
         </fieldset>
-
         <div className="card-actions justify-center mt-4">
           <>
             <button
-              className={`btn btn-error ${
-                viewOnly || loading ? "cursor-not-allowed " : ""
-              }`}
-              disabled={viewOnly || loading}
+              className={`btn btn-error ${viewOnly || loadingId === _id ? "cursor-not-allowed" : ""}`}
+              disabled={viewOnly || loadingId === _id}
               onClick={() => handelSendRequest("ignored", _id)}
             >
               Ignore
             </button>
             <button
-              className={`btn btn-success ${
-                viewOnly || loading ? "cursor-not-allowed " : ""
-              }`}
-              disabled={viewOnly || loading}
+              className={`btn btn-success ${viewOnly || loadingId === _id ? "cursor-not-allowed" : ""}`}
+              disabled={viewOnly || loadingId === _id}
               onClick={() => handelSendRequest("interested", _id)}
             >
               Interested
