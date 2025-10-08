@@ -10,6 +10,7 @@ import Feed from "./pages/Feed";
 import Connections from "./pages/Connections";
 import Requests from "./pages/Requests";
 import Premium from "./pages/Premium";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -24,9 +25,8 @@ function App() {
               <Route path="profile" element={<Profile />} />
               <Route path="connections" element={<Connections />} />
               <Route path="requests" element={<Requests />} />
-              <Route path="premium" element={<Premium />} />  
-              <Route path="*" element={<NotFound />} />
-
+              <Route path="premium" element={<Premium />} /> 
+              <Route path="*" element={<NotFound/>} />
             </Route>
           </Routes>
         </BrowserRouter>
