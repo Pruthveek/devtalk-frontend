@@ -3,17 +3,18 @@ import { BASE_URL } from "../../utils/constants";
 import { useDispatch } from "react-redux";
 import { removeUserFromFeed } from "../../utils/feedSlice";
 import { toast } from "react-toastify";
+import { useState } from "react";
 
 const UserCard = ({ user, viewOnly = false }) => {
   const { _id, firstName, lastName, photoUrl, about, age, gender, skills } =
     user;
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const handelSendRequest = async (status, userId) => {
     if (viewOnly) return;
-    viewOnly = true;
     try {
-      
+      setLoading(true);
       const res = await axios.post(
         BASE_URL + "/request/send/" + status + "/" + userId,
         {},
@@ -21,13 +22,15 @@ const UserCard = ({ user, viewOnly = false }) => {
       );
       dispatch(removeUserFromFeed(userId));
       if (status === "interested") {
-        toast.success(res.data.message+` to ${firstName}.`);
+        toast.success(res.data.message + ` to ${firstName}.`);
       }
       if (status === "ignored") {
         toast.error(`${firstName} removed from feed.`);
       }
     } catch (err) {
       console.error("Error : " + err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,22 +61,26 @@ const UserCard = ({ user, viewOnly = false }) => {
         </fieldset>
 
         <div className="card-actions justify-center mt-4">
-          <button
-            className={`btn btn-error ${viewOnly ? "cursor-not-allowed " : ""}`}
-            disabled={viewOnly} 
-            onClick={() => handelSendRequest("ignored", _id)}
-          >
-            Ignore
-          </button>
-          <button
-            className={`btn btn-success ${
-              viewOnly ? "cursor-not-allowed " : ""
-            }`}
-            disabled={viewOnly}
-            onClick={() => handelSendRequest("interested", _id)}
-          >
-            Interested
-          </button>
+          <>
+            <button
+              className={`btn btn-error ${
+                viewOnly || loading ? "cursor-not-allowed " : ""
+              }`}
+              disabled={viewOnly || loading}
+              onClick={() => handelSendRequest("ignored", _id)}
+            >
+              Ignore
+            </button>
+            <button
+              className={`btn btn-success ${
+                viewOnly || loading ? "cursor-not-allowed " : ""
+              }`}
+              disabled={viewOnly || loading}
+              onClick={() => handelSendRequest("interested", _id)}
+            >
+              Interested
+            </button>
+          </>
         </div>
       </div>
     </div>
