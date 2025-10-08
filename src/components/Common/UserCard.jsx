@@ -10,8 +10,10 @@ const UserCard = ({ user, viewOnly = false }) => {
   const dispatch = useDispatch();
 
   const handelSendRequest = async (status, userId) => {
-    if (viewOnly) return; // prevent API calls when in viewOnly mode
+    if (viewOnly) return;
+    viewOnly = true;
     try {
+      
       const res = await axios.post(
         BASE_URL + "/request/send/" + status + "/" + userId,
         {},
