@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { addRequest, removeRequest } from "../utils/requestSlice";
@@ -7,7 +7,7 @@ import { addRequest, removeRequest } from "../utils/requestSlice";
 const Requests = () => {
   const requests = useSelector((store) => store.requests);
   const dispatch = useDispatch();
-
+  const [loading, setLoading] = useState(false);
   const fatchRequest = async () => {
     try {
       const res = await axios.get(BASE_URL + "/user/requests/received", {
@@ -20,12 +20,14 @@ const Requests = () => {
   };
   const reviewRequest = async (status, _id) => {
     try {
+      setLoading(true);
       const res = await axios.post(
         BASE_URL + "/request/review/" + status + "/" + _id,
         {},
         { withCredentials: true }
       );
       dispatch(removeRequest(_id));
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching requests:", err);
     }
@@ -99,7 +101,10 @@ const Requests = () => {
                   )}
                   <div className="card-actions justify-center mt-4">
                     <button
-                      className="btn btn-error"
+                      className={`btn btn-error ${
+                        loading ? "cursor-not-allowed " : ""
+                      }`}
+                      disabled={loading}
                       onClick={() => {
                         reviewRequest("rejected", request._id);
                       }}
@@ -107,7 +112,10 @@ const Requests = () => {
                       Reject
                     </button>
                     <button
-                      className="btn btn-success"
+                      className={`btn btn-success ${
+                        loading ? "cursor-not-allowed " : ""
+                      }`}
+                      disabled={loading}
                       onClick={() => {
                         reviewRequest("accepted", request._id);
                       }}
