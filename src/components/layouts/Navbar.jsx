@@ -68,7 +68,7 @@ const Navbar = () => {
               <div className="w-10 rounded-full">
                 <img alt="user profile photo" src={user.photoUrl} />
                 {user?.isPremium && (<>
-                <div className="absolute -top-2 -right-2 rounded-full animate-ping">
+                <div className="absolute -top-2 -right-2 rounded-full animate-spin">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill={user?.membershipType==="gold"?"gold":"silver"}
