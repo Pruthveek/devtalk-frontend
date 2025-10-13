@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addFeed } from "../utils/feedSlice";
 import { BASE_URL } from "../utils/constants";
 import UserCard from "../components/Common/UserCard";
-import LoddingAnimation from "../components/Common/loddingAnimation";
+import LoddingAnimation from "../components/Common/LoddingAnimation";
 
 const Feed = () => {
   const feed = useSelector((store) => store.feed);
