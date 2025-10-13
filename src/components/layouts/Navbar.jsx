@@ -8,8 +8,8 @@ import { removeUser } from "../../utils/userSlice";
 const Navbar = () => {
   const user = useSelector((store) => store.user);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-  const navigation=useNavigate();
-  const dispatch=useDispatch()
+  const navigation = useNavigate();
+  const dispatch = useDispatch();
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
@@ -17,14 +17,14 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(BASE_URL + "/logout", {}, { withCredentials: true }); 
-       dispatch(removeUser())
-      return navigation("/login"); 
+      await axios.post(BASE_URL + "/logout", {}, { withCredentials: true });
+      dispatch(removeUser());
+      return navigation("/login");
     } catch (err) {
       console.error(err);
     }
   };
- 
+
   return (
     <div className="navbar fixed bg-base-100 shadow-2xl shadow-black max-w-7xl mx-auto px-4 mt-2 rounded-full z-40">
       <div className="flex-1">
@@ -42,7 +42,7 @@ const Navbar = () => {
                 onChange={() => setTheme(theme === "light" ? "dark" : "light")}
               />
               <svg
-                className="swap-on h-8 w-8 fill-current"
+                className="swap-on h-8 w-8 fill-current "
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
               >
@@ -58,43 +58,33 @@ const Navbar = () => {
             </label>
           </div>
 
-          {/* Avatar Dropdown */}
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
               role="button"
-              className="btn btn-ghost btn-circle avatar"
+              className="btn btn-ghost btn-circle avatar relative"
             >
-              <div className="w-10 rounded-full">
+              <div
+                className={`w-10 rounded-full ${
+                  user?.isPremium
+                    ? user.membershipType === "gold"
+                      ? "ring-3 ring-yellow-400 "
+                      : "ring-3 ring-gray-400 "
+                    : ""
+                }`}
+              >
                 <img alt="user profile photo" src={user.photoUrl} />
-                {user?.isPremium && (<>
-                <div className="absolute -top-2 -right-2 rounded-full animate-spin">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill={user?.membershipType==="gold"?"gold":"silver"}
-                    viewBox="0 0 24 24"
-                    className="inline-block w-4 h-4 stroke-current"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="0"
-                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.54 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.784.57-1.838-.197-1.539-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.98 10.1c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                    ></path>
-                  </svg>
-                </div>
-                </>)}
               </div>
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow-2xl shadow-black"
+              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow-2xl shadow-black"
             >
               <li>
                 <Link to="/profile">Profile</Link>
               </li>
               <li>
-                <Link to="/connections">Connections </Link>
+                <Link to="/connections">Connections</Link>
               </li>
               <li>
                 <Link to="/requests">Requests</Link>
@@ -107,6 +97,7 @@ const Navbar = () => {
               </li>
             </ul>
           </div>
+
           <div>
             <p className="text-sm">{user.firstName}</p>
           </div>

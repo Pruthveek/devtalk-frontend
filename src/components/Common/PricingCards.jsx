@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../../utils/constants";
+import LoddingAnimation from "./loddingAnimation";
 
 const CheckIcon = ({ className }) => {
   return (
@@ -25,8 +26,10 @@ const PricingCards = () => {
   const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [membershipType, setMembershipType] = useState(null);
   const [remainingDays, setRemainingDays] = useState(0);
+  const [loading, setLoading] = useState(false); // added loading
 
   const verifyPremium = async (paymentResponse) => {
+    setLoading(true); // start loading
     try {
       const res = await axios.get(BASE_URL + "/premium/verify", {
         withCredentials: true,
@@ -41,7 +44,6 @@ const PricingCards = () => {
           0,
           Math.ceil(diffTime / (1000 * 60 * 60 * 24))
         );
-
         setRemainingDays(remaining);
       } else {
         setIsPremiumUser(false);
@@ -49,8 +51,9 @@ const PricingCards = () => {
         setRemainingDays(0);
       }
     } catch (err) {
-      const msg = err.response?.data?.error || "Something went wrong.";
-      console.error(msg);
+      console.error(err.response?.data?.error || "Something went wrong.");
+    } finally {
+      setLoading(false); // stop loading
     }
   };
 
@@ -64,14 +67,15 @@ const PricingCards = () => {
       <span>{children}</span>
     </li>
   );
+
   const handleBuyClick = async (plan) => {
+    setLoading(true); // start loading
     try {
       const order = await axios.post(
         BASE_URL + "/payment/create",
         { membershipType: plan },
         { withCredentials: true }
       );
-      console.log(order.data);
       const { amount, currency, orderId } = order?.data?.data || {};
       const notes = order?.data?.data?.notes || {};
       const options = {
@@ -98,30 +102,39 @@ const PricingCards = () => {
       rzp.open();
     } catch (err) {
       console.error("Error : " + err);
+    } finally {
+      setLoading(false); // stop loading
     }
   };
+
+if (loading) {
+  return (<>
+  <LoddingAnimation />
+  </>
+  );
+}
+
 
   return (
     <>
       {isPremiumUser ? (
-        //create a box for existing plan
-        <div className="flex flex-col items-center justify-center h-96">
+        <div className="flex flex-col items-center justify-center h-96 animate-fadeIn">
           <div className="text-center">
             <h2 className="text-3xl font-bold mb-4">You are a Premium User!</h2>
             <p className="text-lg mb-6">
               Thank you for being a valued member of our community.
             </p>
 
-            <div className="inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full">
+            <div className="inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full shadow-2xl shadow-black mb-4">
               <span className="font-semibold">
                 {membershipType} membership Active
               </span>
             </div>
-            <p className="text-lg mb-6">Remainig days are {remainingDays}</p>
+            <p className="text-lg mb-6">Remaining days: {remainingDays}</p>
           </div>
         </div>
       ) : (
-        <section className="w-full pb-20">
+        <section className="w-full pb-20 animate-fadeIn">
           <div className="mx-auto max-w-6xl px-4 md:px-6 py-10">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-bold">Choose your plan</h2>
@@ -129,7 +142,7 @@ const PricingCards = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
               {/* Silver */}
-              <div className="card h-full bg-base-100 border border-base-300 shadow-2xl shadow-black">
+              <div className="card h-full bg-base-100 border border-base-300 shadow-2xl shadow-black animate-slideUp">
                 <div className="card-body">
                   <h3 className="card-title">Silver</h3>
                   <p className="text-base-content/70">
@@ -164,7 +177,7 @@ const PricingCards = () => {
               </div>
 
               {/* Gold */}
-              <div className="card relative h-full bg-base-100  border-2 border-warning/40 ring-2 ring-warning/30 shadow-2xl shadow-warning">
+              <div className="card relative h-full bg-base-100 border-2 border-warning/40 ring-2 ring-warning/30 shadow-2xl shadow-warning animate-slideUp delay-75">
                 <div className="absolute right-4 -top-3">
                   <span className="badge badge-warning badge-lg shadow">
                     Most popular
@@ -187,8 +200,8 @@ const PricingCards = () => {
                   </div>
 
                   <ul className="mt-4 space-y-3">
-                    <Feature>chat with other people</Feature>
-                    <Feature>unlimited connection request per day</Feature>
+                    <Feature>Chat with other people</Feature>
+                    <Feature>Unlimited connection request per day</Feature>
                     <Feature>Blue tick</Feature>
                     <Feature>6 months</Feature>
                   </ul>

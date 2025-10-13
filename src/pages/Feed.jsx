@@ -1,15 +1,18 @@
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addFeed } from "../utils/feedSlice";
 import { BASE_URL } from "../utils/constants";
 import UserCard from "../components/Common/UserCard";
+import LoddingAnimation from "../components/Common/loddingAnimation";
 
 const Feed = () => {
   const feed = useSelector((store) => store.feed);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+
   const getFeed = async () => {
-    if (feed && feed.length > 0) return;
+    setLoading(true);
     try {
       const res = await axios.get(BASE_URL + "/user/feed", {
         withCredentials: true,
@@ -17,27 +20,34 @@ const Feed = () => {
       dispatch(addFeed(res?.data));
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
-
+  setTimeout(() => {
+    setLoading(false);
+  }, 2000);
   useEffect(() => {
-    getFeed();
-  }, []);
-  if (!feed || feed.length <= 0) {
+    if (!feed || feed.length === 0) getFeed();
+  }, []); 
+
+  if (loading) return <LoddingAnimation />;
+
+  if (!feed || feed.length === 0) {
     return (
-      <div className=" w-full flex justify-center pt-40">
+      <div className="w-full flex justify-center pt-40">
         <h1 className="text-3xl text-center">
-           No new person was found.<br/> Please check again after some time. ✌
+          No new person was found.
+          <br /> Please check again after some time. ✌
         </h1>
       </div>
     );
   }
+
   return (
-    feed && (
-      <div className="h-screen w-full flex justify-center items-center">
-        <UserCard user={feed[0]} />
-      </div>
-    )
+    <div className="h-screen w-full flex justify-center items-center">
+      <UserCard user={feed[0]} />
+    </div>
   );
 };
 

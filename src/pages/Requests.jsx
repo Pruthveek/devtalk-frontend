@@ -3,6 +3,7 @@ import { useEffect,useState } from "react";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { addRequest, removeRequest } from "../utils/requestSlice";
+import LoddingAnimation from "../components/Common/loddingAnimation";
 
 const Requests = () => {
   const requests = useSelector((store) => store.requests);
@@ -10,17 +11,19 @@ const Requests = () => {
   const [loading, setLoading] = useState(false);
   const fatchRequest = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(BASE_URL + "/user/requests/received", {
         withCredentials: true,
       });
       dispatch(addRequest(res?.data?.data));
     } catch (err) {
       console.error("Error fetching requests:", err);
-    }
+    }finally {
+      setLoading(false);
+    } 
   };
   const reviewRequest = async (status, _id) => {
     try {
-      setLoading(true);
       const res = await axios.post(
         BASE_URL + "/request/review/" + status + "/" + _id,
         {},
@@ -37,6 +40,11 @@ const Requests = () => {
     fatchRequest();
   }, []);
 
+  if (loading) {
+    return (
+      <LoddingAnimation />
+    );
+  }
   if (!requests || requests.length === 0) {
     return (
       <div className=" w-full flex justify-center pt-40">

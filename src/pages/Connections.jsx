@@ -1,14 +1,17 @@
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addConnection } from "../utils/connectionSlice";
+import LoddingAnimation from "../components/Common/loddingAnimation";
 
 const Connections = () => {
   const connections = useSelector((store) => store.connections);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
 
   const fetchConnections = async () => {
+    setLoading(true);
     try {
       const res = await axios.get(BASE_URL + "/user/connections", {
         withCredentials: true,
@@ -16,6 +19,8 @@ const Connections = () => {
       dispatch(addConnection(res?.data?.data));
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -23,16 +28,21 @@ const Connections = () => {
     fetchConnections();
   }, []);
 
-  if (!connections) return null;
+  // Show loading animation first
+  if (loading) {
+    return <LoddingAnimation />;
+  }
 
-  if (connections.length === 0) {
+  // No connections
+  if (!connections || connections.length === 0) {
     return (
-      <div className=" w-full flex justify-center pt-40">
+      <div className="w-full flex justify-center pt-40">
         <h1 className="text-3xl">No connection found 😭</h1>
       </div>
     );
   }
 
+  // Render connections
   return (
     <div className="max-w-7xl mx-auto py-24">
       <div className="flex flex-col items-center">
@@ -66,23 +76,25 @@ const Connections = () => {
                   </h2>
                   <p className="text-sm text-gray-500">{about}</p>
                   {age && (
-                      <p>
-                        Age : <span>{age}</span>
-                      </p>
+                    <p>
+                      Age : <span>{age}</span>
+                    </p>
                   )}
                   {gender && (
-                      <p>
-                        Gender : <span>{gender}</span>
-                      </p>
+                    <p>
+                      Gender : <span>{gender}</span>
+                    </p>
                   )}
                   {skills && skills.length > 0 && (
                     <div className="flex ">
-                      <p className="flex gap-2 flex-wrap">Skill: {skills.map((skill, i) => (
-                        <span key={i} className="badge">
-                          {skill}
-                        </span>
-                      ))}</p>
-                      
+                      <p className="flex gap-2 flex-wrap">
+                        Skill:{" "}
+                        {skills.map((skill, i) => (
+                          <span key={i} className="badge">
+                            {skill}
+                          </span>
+                        ))}
+                      </p>
                     </div>
                   )}
                 </div>

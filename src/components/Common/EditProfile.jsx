@@ -5,6 +5,7 @@ import { BASE_URL } from "../../utils/constants";
 import { useDispatch } from "react-redux";
 import { addUser } from "../../utils/userSlice";
 import { toast } from "react-toastify";
+import LoddingAnimation from "./loddingAnimation";  
 
 export const EditProfile = ({ user }) => {
   const [firstName, setFirstName] = useState(user?.firstName || "");
@@ -15,6 +16,7 @@ export const EditProfile = ({ user }) => {
   const [age, setAge] = useState(user?.age || "");
   const [gender, setGender] = useState(user?.gender || "");
   const [about, setAbout] = useState(user?.about || "");
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -30,6 +32,7 @@ export const EditProfile = ({ user }) => {
   };
 
   const saveProfile = async () => {
+    setLoading(true); 
     try {
       const res = await axios.patch(
         BASE_URL + "/profile/edit",
@@ -41,9 +44,15 @@ export const EditProfile = ({ user }) => {
     } catch (err) {
       const msg = err.response?.data?.error || "Something went wrong.";
       toast.error(msg);
-    }
+    }finally {
+      setLoading(false); 
+    } 
   };
-
+  if (loading) {
+    return (
+      <LoddingAnimation />
+    );
+  }   
   return (
     <div className=" flex flex-col md:flex-row gap-4 pt-10 pb-20 sm:py-24 justify-center items-center">
       <div className="mx-2">
