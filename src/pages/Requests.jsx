@@ -3,7 +3,7 @@ import { useEffect,useState } from "react";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { addRequest, removeRequest } from "../utils/requestSlice";
-import LoddingAnimation from "../components/Common/loddingAnimation";
+import LoddingAnimation from "../components/Common/LoddingAnimation";
 
 const Requests = () => {
   const requests = useSelector((store) => store.requests);

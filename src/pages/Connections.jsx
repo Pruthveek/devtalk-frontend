@@ -3,7 +3,7 @@ import { BASE_URL } from "../utils/constants";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addConnection } from "../utils/connectionSlice";
-import LoddingAnimation from "../components/Common/loddingAnimation";
+import LoddingAnimation from "../components/Common/LoddingAnimation";
 
 const Connections = () => {
   const connections = useSelector((store) => store.connections);

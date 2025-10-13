@@ -5,7 +5,7 @@ import { BASE_URL } from "../../utils/constants";
 import { useDispatch } from "react-redux";
 import { addUser } from "../../utils/userSlice";
 import { toast } from "react-toastify";
-import LoddingAnimation from "./loddingAnimation";  
+import LoddingAnimation from "./LoddingAnimation";  
 
 export const EditProfile = ({ user }) => {
   const [firstName, setFirstName] = useState(user?.firstName || "");
