@@ -11,6 +11,7 @@ import Connections from "./pages/Connections";
 import Requests from "./pages/Requests";
 import Premium from "./pages/Premium";
 import NotFound from "./pages/NotFound";
+import ChatBox from "./pages/ChatBox";  
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="connections" element={<Connections />} />
               <Route path="requests" element={<Requests />} />
               <Route path="premium" element={<Premium />} /> 
+              <Route path="chat/:targetUserId" element={<ChatBox />} />
               <Route path="*" element={<NotFound/>} />
             </Route>
           </Routes>

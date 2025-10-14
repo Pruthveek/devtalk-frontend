@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addConnection } from "../utils/connectionSlice";
 import LoddingAnimation from "../components/Common/LoddingAnimation";
+import { Link } from "react-router-dom";
 
 const Connections = () => {
   const connections = useSelector((store) => store.connections);
@@ -98,6 +99,9 @@ const Connections = () => {
                     </div>
                   )}
                 </div>
+                <Link to={`/chat/${_id}`} className="m-2">
+                  <button className="btn btn-success w-full">Chat</button>
+                </Link>
               </div>
             );
           })}
