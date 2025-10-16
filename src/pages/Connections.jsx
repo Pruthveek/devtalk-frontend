@@ -21,7 +21,7 @@ const Connections = () => {
       });
       dispatch(addConnection(res?.data?.data));
     } catch (err) {
-      console.log(err);
+      console.error(err);
     } finally {
       setLoading(false);
     }

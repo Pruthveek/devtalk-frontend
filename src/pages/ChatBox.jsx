@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { toast } from "react-toastify";
+import LoddingAnimation from "../components/Common/LoddingAnimation";
 const ChatBox = () => {
   const user = useSelector((store) => store.user);
   const { targetUserId } = useParams();
@@ -162,9 +163,12 @@ const ChatBox = () => {
   const renderContent = () => {
     if (loading) {
       return (
-        <div className="flex justify-center items-center h-full">
-          Loading chat...
-        </div>
+        // <div className="flex justify-center items-center h-full">
+        //   Loading chat...
+        // </div>
+        <>
+        <LoddingAnimation/>
+        </>
       );
     }
     if (error) {
@@ -225,8 +229,8 @@ const ChatBox = () => {
             onClick={sendMessage}
             disabled={loading || !!error}
           >
-            <div className={` w-8 overflow-hidden rounded-full bg-amber-300`}>
-              <img alt="user profile photo" src={targetUserPhotoUrl} />
+            <div className={` w-8 overflow-hidden rounded-full`}>
+              <img alt="P" src={targetUserPhotoUrl} />
             </div>
             Send
           </button>
