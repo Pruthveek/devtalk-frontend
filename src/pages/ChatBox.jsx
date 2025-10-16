@@ -17,6 +17,7 @@ const ChatBox = () => {
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const isScrolledUpRef = useRef(false);
+  const [targetUserPhotoUrl, setTargetUserPhotoUrl] = useState("");
 
   const scrollToBottom = (behavior = "smooth") => {
     messagesEndRef.current?.scrollIntoView({ behavior });
@@ -45,6 +46,7 @@ const ChatBox = () => {
         const res = await axios.get(`${BASE_URL}/chat/${targetUserId}`, {
           withCredentials: true,
         });
+        setTargetUserPhotoUrl(res.data?.targetUserPhotoUrl);
         const chatMessages = res.data?.chat?.messages.map((msg) => ({
           _id: msg._id, // Using a unique ID for the key is crucial
           firstName: msg?.senderId?.firstName,
@@ -142,7 +144,6 @@ const ChatBox = () => {
       text: newMessage,
       timeString: timeString,
     };
-
     socket.current.emit("sendMessage", messageData);
 
     setMessages((prevMessages) => [
@@ -207,7 +208,7 @@ const ChatBox = () => {
         {renderContent()}
         <div ref={messagesEndRef} />
       </div>
-      <div className="p-2 border-t mb-0 fixed bottom-12 left-0 w-full bg-white">
+      <div className="p-2 border-t mb-0 fixed bottom-14 left-0 w-full bg-white">
         <div className="flex items-center gap-2 w-full max-w-7xl mx-auto">
           <input
             value={newMessage}
@@ -220,15 +221,13 @@ const ChatBox = () => {
           />
 
           <button
-            className="btn btn-neutral rounded-full px-4 sm:px-6 flex-shrink-0"
+            className="btn btn-neutral rounded-full pl-1 pr-4 sm:pl-1 sm:pr-6 flex-shrink-0"
             onClick={sendMessage}
             disabled={loading || !!error}
           >
-            {/* <div
-              className={`w-10 rounded-full bg-amber-300`}
-            >
-              <img alt="user profile photo" src="" /> 
-            </div>*/}
+            <div className={` w-8 overflow-hidden rounded-full bg-amber-300`}>
+              <img alt="user profile photo" src={targetUserPhotoUrl} />
+            </div>
             Send
           </button>
         </div>
