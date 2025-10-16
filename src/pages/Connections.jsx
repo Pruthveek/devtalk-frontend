@@ -59,6 +59,8 @@ const Connections = () => {
               skills,
               age,
               gender,
+              isPremium,
+              membershipType,
             } = collection;
 
             return (
@@ -68,7 +70,15 @@ const Connections = () => {
               >
                 <div className="card-body">
                   <div className="avatar flex justify-center">
-                    <div className="w-20 rounded-full ring ring-neutral ring-offset-base-100 ring-offset-2">
+                    <div
+                      className={`w-20 rounded-full ${
+                        isPremium
+                          ? membershipType === "gold"
+                            ? "ring-5 ring-yellow-400 "
+                            : "ring-5 ring-gray-400 "
+                          : ""
+                      }`}
+                    >
                       <img src={photoUrl} alt={firstName} />
                     </div>
                   </div>
@@ -99,9 +109,15 @@ const Connections = () => {
                     </div>
                   )}
                 </div>
-                <Link to={`/chat/${_id}`} className="m-2">
-                  <button className="btn btn-success w-full">Chat</button>
-                </Link>
+                {isPremium ? (
+                  <Link to={`/chat/${_id}`} className="m-2">
+                    <button className="btn btn-success w-full ">Chat</button>
+                  </Link>
+                ) : (
+                  <button className="btn btn-success m-2 cursor-not-allowed">
+                    Not a Premium user
+                  </button>
+                )}
               </div>
             );
           })}

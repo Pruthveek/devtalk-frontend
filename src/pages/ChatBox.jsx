@@ -4,18 +4,15 @@ import { CreateSocketConnection } from "../utils/socket";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
-
+import { toast } from "react-toastify";
 const ChatBox = () => {
   const user = useSelector((store) => store.user);
   const { targetUserId } = useParams();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const userId = user?._id;
-
-  // --- State for a smoother user experience ---
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const socket = useRef(null);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -24,8 +21,20 @@ const ChatBox = () => {
   const scrollToBottom = (behavior = "smooth") => {
     messagesEndRef.current?.scrollIntoView({ behavior });
   };
+  const isRandomText = (text) => {
+    // too short
+    if (text.trim().length < 2) return true;
 
-  // --- FIX #1: Data fetching is now correctly inside a useEffect hook ---
+    // contains only symbols or numbers
+    if (!/[a-zA-Z]/.test(text)) return true;
+
+    // no vowels (like “xqzplm”)
+    if (!/[aeiou]/i.test(text)) return true;
+
+    // repeating same character many times
+    if (/(.)\1{3,}/.test(text)) return true;
+    return false;
+  };
   useEffect(() => {
     const fetchChatMessages = async () => {
       if (!targetUserId) return;
@@ -43,7 +52,9 @@ const ChatBox = () => {
           messageSenderId: msg?.senderId?._id,
           text: msg?.text,
           timeString: new Date(msg.createdAt).toLocaleTimeString("en-US", {
-            hour: "numeric", minute: "numeric", hour12: true,
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
           }),
         }));
         setMessages(chatMessages || []);
@@ -56,11 +67,10 @@ const ChatBox = () => {
         setLoading(false);
       }
     };
-    
-    fetchChatMessages();
-  }, [targetUserId]); // This ensures the effect only runs when the targetUserId changes.
 
-  // --- Smart scrolling logic ---
+    fetchChatMessages();
+  }, [targetUserId]);
+
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage?.messageSenderId === userId) {
@@ -91,14 +101,15 @@ const ChatBox = () => {
     socket.current.emit("joinChat", { userId, targetUserId });
 
     socket.current.on("messageReceived", (newMessageData) => {
-      // This logic prevents duplicate messages.
-      // It relies on the backend sending a `senderId` property.
       if (newMessageData.senderId !== userId) {
-        setMessages((prevMessages) => [...prevMessages, {
-          ...newMessageData,
-          _id: newMessageData._id || `socket-${Date.now()}`,
-          messageSenderId: newMessageData.senderId,
-        }]);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            ...newMessageData,
+            _id: newMessageData._id || `socket-${Date.now()}`,
+            messageSenderId: newMessageData.senderId,
+          },
+        ]);
       }
     });
 
@@ -110,9 +121,17 @@ const ChatBox = () => {
   }, [userId, targetUserId]);
 
   const sendMessage = () => {
+    if (isRandomText(newMessage)) {
+      toast.warning("Please enter a meaningful message!");
+      return;
+    }
     if (newMessage.trim() === "" || !socket.current) return;
 
-    const timeString = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric", hour12: true });
+    const timeString = new Date().toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
 
     const messageData = {
       _id: `temp-${Date.now()}`,
@@ -125,8 +144,11 @@ const ChatBox = () => {
     };
 
     socket.current.emit("sendMessage", messageData);
-    
-    setMessages((prevMessages) => [...prevMessages, { ...messageData, messageSenderId: userId }]);
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { ...messageData, messageSenderId: userId },
+    ]);
     setNewMessage("");
   };
 
@@ -135,17 +157,27 @@ const ChatBox = () => {
       sendMessage();
     }
   };
-  
+
   const renderContent = () => {
     if (loading) {
-      return <div className="flex justify-center items-center h-full">Loading chat...</div>;
+      return (
+        <div className="flex justify-center items-center h-full">
+          Loading chat...
+        </div>
+      );
     }
     if (error) {
-      return <div className="flex justify-center items-center h-full text-red-500">{error}</div>;
+      return (
+        <div className="flex justify-center items-center h-full text-red-500">
+          {error}
+        </div>
+      );
     }
     return messages.map((msg) => (
       <div
-        className={`chat ${msg.messageSenderId === userId ? "chat-end" : "chat-start"}`}
+        className={`chat ${
+          msg.messageSenderId === userId ? "chat-end" : "chat-start"
+        }`}
         key={msg._id}
       >
         <div className="chat-image avatar shadow-lg shadow-black rounded-full">
@@ -175,7 +207,7 @@ const ChatBox = () => {
         {renderContent()}
         <div ref={messagesEndRef} />
       </div>
-      <div className="p-2 border-t mb-0 fixed bottom-12 left-0 w-full">
+      <div className="p-2 border-t mb-0 fixed bottom-12 left-0 w-full bg-white">
         <div className="flex items-center gap-2 w-full max-w-7xl mx-auto">
           <input
             value={newMessage}
@@ -186,11 +218,17 @@ const ChatBox = () => {
             className="input input-bordered w-full rounded-full bg-white text-black focus:outline-none "
             disabled={loading || !!error}
           />
+
           <button
             className="btn btn-neutral rounded-full px-4 sm:px-6 flex-shrink-0"
             onClick={sendMessage}
             disabled={loading || !!error}
           >
+            {/* <div
+              className={`w-10 rounded-full bg-amber-300`}
+            >
+              <img alt="user profile photo" src="" /> 
+            </div>*/}
             Send
           </button>
         </div>
