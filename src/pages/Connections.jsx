@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 
 const Connections = () => {
   const connections = useSelector((store) => store.connections);
+  const user = useSelector((store) => store.user);
+  const loggedinUserIsPremiuem = user.isPremium;
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
 
@@ -29,12 +31,10 @@ const Connections = () => {
     fetchConnections();
   }, []);
 
-  // Show loading animation first
   if (loading) {
     return <LoddingAnimation />;
   }
 
-  // No connections
   if (!connections || connections.length === 0) {
     return (
       <div className="w-full flex justify-center pt-40">
@@ -43,7 +43,6 @@ const Connections = () => {
     );
   }
 
-  // Render connections
   return (
     <div className="max-w-7xl mx-auto py-24">
       <div className="flex flex-col items-center">
@@ -74,8 +73,8 @@ const Connections = () => {
                       className={`w-20 rounded-full ${
                         isPremium
                           ? membershipType === "gold"
-                            ? "ring-5 ring-yellow-400 "
-                            : "ring-5 ring-gray-400 "
+                            ? "ring-5 ring-yellow-400"
+                            : "ring-5 ring-gray-400"
                           : ""
                       }`}
                     >
@@ -88,16 +87,16 @@ const Connections = () => {
                   <p className="text-sm text-gray-500">{about}</p>
                   {age && (
                     <p>
-                      Age : <span>{age}</span>
+                      Age: <span>{age}</span>
                     </p>
                   )}
                   {gender && (
                     <p>
-                      Gender : <span>{gender}</span>
+                      Gender: <span>{gender}</span>
                     </p>
                   )}
                   {skills && skills.length > 0 && (
-                    <div className="flex ">
+                    <div className="flex">
                       <p className="flex gap-2 flex-wrap">
                         Skill:{" "}
                         {skills.map((skill, i) => (
@@ -109,14 +108,22 @@ const Connections = () => {
                     </div>
                   )}
                 </div>
-                {isPremium ? (
-                  <Link to={`/chat/${_id}`} className="m-2">
-                    <button className="btn btn-success w-full ">Chat</button>
-                  </Link>
+
+                {/* --- FIXED CHAT BUTTON LOGIC --- */}
+                {loggedinUserIsPremiuem ? (
+                  isPremium ? (
+                    <Link to={`/chat/${_id}`} className="m-2">
+                      <button className="btn btn-success w-full">Chat</button>
+                    </Link>
+                  ) : (
+                    <button className="btn btn-success m-2 cursor-not-allowed">
+                      Not a Premium user
+                    </button>
+                  )
                 ) : (
-                  <button className="btn btn-success m-2 cursor-not-allowed">
-                    Not a Premium user
-                  </button>
+                  <Link to={`/premium`} className="m-2">
+                    <button className="btn btn-success w-full">Buy a premium</button>
+                  </Link>
                 )}
               </div>
             );
